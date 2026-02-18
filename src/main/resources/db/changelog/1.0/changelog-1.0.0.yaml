@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 25112025-create-books-table
+      author: turalseyidzade
+      changes:
+        - createTable:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: isbn
+                  type: VARCHAR(13)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: release_date
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: imageUrl
+                  type: VARCHAR(512)
+              - column:
+                  name: create_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: update_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP

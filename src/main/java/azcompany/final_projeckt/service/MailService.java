@@ -8,22 +8,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
-public class MailService {
-    private final MailSender mailSender;
 
-    @Value("${spring.mail.username}")
-    private String from;
+public interface MailService {
 
-    public void sendEmail(String to,String subject, String content) {
-        log.info("ActionLog.sendEmail.start: to={}", to);
-        var mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(from);
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(content);
-        mailSender.send(mailMessage);
-        log.info("ActionLog.sendEmail.end: to={}", to);
+    default void sendEmail(String to, String subject, String text) {
+
     }
 }

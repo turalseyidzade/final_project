@@ -1,12 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.0'
+    id 'org.springframework.boot' version '3.4.2' // Stabil versiyaya keçdik
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'az-company'
 version = '0.0.1-SNAPSHOT'
-description = 'final_projeckt'
 
 java {
     toolchain {
@@ -19,8 +18,10 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+
 ext {
-    set('springCloudVersion', "2025.1.0")
+    // Spring Boot 3.4.x üçün uyğun Cloud versiyası
+    set('springCloudVersion', "2024.0.0")
 }
 
 repositories {
@@ -34,38 +35,38 @@ dependencyManagement {
 }
 
 dependencies {
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // @Valid üçün vacibdir
+
+    // Cloud & Database
     implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
     implementation 'org.liquibase:liquibase-core:4.31.1'
-
-    // openApi
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
-
-
-    //jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
-
-    //mail
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-
-
-
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     runtimeOnly 'org.postgresql:postgresql'
+
+    // OpenAPI / Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // MapStruct & Lombok
+    implementation 'org.mapstruct:mapstruct:1.6.3' // Java 21 üçün ən son versiya
+    compileOnly 'org.projectlombok:lombok'
+
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

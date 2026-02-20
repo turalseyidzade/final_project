@@ -13,10 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
     private final BunnyService bunnyService;
 
-    @PostMapping
+    @PostMapping("/{bookId}")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public String uploadFile(@RequestPart MultipartFile file) {
-        return bunnyService.uploadFile(file);
+    public String uploadFile(@PathVariable Long bookId, @RequestPart MultipartFile file) {
+        return bunnyService.uploadFile(bookId, file);
     }
 }

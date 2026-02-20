@@ -4,12 +4,12 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
   config:
-    import: "vault://"
+    # import: "vault://"
     name: final_projeckt
   datasource:
     url: jdbc:postgresql://localhost:5432/final_projeckt
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    username: postgres
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,6 +17,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -30,6 +35,7 @@ spring:
             enable: true
             required: true
 
-#springdoc:
-#  api-docs:
-#    path: /api/v1/documents
+
+bunny:
+  cdn:
+    url: https://tural-bookstore.b-cdn.net

@@ -43,9 +43,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-validation' // @Valid üçün vacibdir
 
-    // Cloud & Database
-    implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
-    implementation 'org.liquibase:liquibase-core:4.31.1'
+
     runtimeOnly 'org.postgresql:postgresql'
 
     // OpenAPI / Swagger

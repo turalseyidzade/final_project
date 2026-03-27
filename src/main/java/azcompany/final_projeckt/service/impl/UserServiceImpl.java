@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,21 +30,23 @@ public class UserServiceImpl implements UserService {
     private final OtpService otpService;
 
     @Override
+    @Transactional
     public UserResponseDto register(UserRegistrationRequestDto requestDto) throws RegistrationException {
-         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-             throw new RegistrationException(String.format("Can't register user with email %s", requestDto.getEmail()));
-         }
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+            throw new RegistrationException(String.format("Can't register user with email %s", requestDto.getEmail()));
+        }
 
-         User user = userMapper.toUser(requestDto);
-         user.setPassword(passwordEncoder.encode(user.getPassword()));
-         user.setEnabled(false);
+        User user = userMapper.toUser(requestDto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setEnabled(false);
+        user.setBalance(BigDecimal.ZERO);
 
-         User savedUser = userRepository.save(user);
-         shoppingCartService.createShoppingCart(savedUser);
-         otpService.generateOtpCode(savedUser.getEmail(), savedUser.getEmail());
+        User savedUser = userRepository.save(user);
+        shoppingCartService.createShoppingCart(savedUser);
+        otpService.generateOtpCode(savedUser.getEmail(), savedUser.getEmail());
 
-         log.info("ActionLog.register.success: User created and OTP sent to {}", savedUser.getEmail());
-         return userMapper.toDto(savedUser);
+        log.info("ActionLog.register.success: User created and OTP sent to {}", savedUser.getEmail());
+        return userMapper.toDto(savedUser);
     }
 
 
@@ -57,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
         user.setEnabled(true);
 
-        log.info("ActionLog.verifyAccount.success: user {} is now enabled\", email");
+        log.info("ActionLog.verifyAccount.success: user {} is now enabled", email);
 
     }
 

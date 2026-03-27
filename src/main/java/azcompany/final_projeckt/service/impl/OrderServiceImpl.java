@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     public List<OrderResponseDto> getAll(Long id) {
-        List<Order> orderList = orderRepository.findAllById(id);
+        List<Order> orderList = orderRepository.findAllByUserId(id);
         return orderList.stream()
                 .map(orderMapper::toDto)
                 .toList();

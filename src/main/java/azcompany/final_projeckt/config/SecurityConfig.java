@@ -34,13 +34,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/v1/auth/**",
-                                "/v1/files/**",
-                                "/v1/books/**",
+                                "/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -51,7 +48,7 @@ public class SecurityConfig {
                                 response.setStatus(HttpServletResponse.SC_FORBIDDEN)
                         )
                 )
-                .userDetailsService(userDetailsService())
+                .authenticationProvider(authenticationProvider(userDetailsService(), passwordEncoder()))
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

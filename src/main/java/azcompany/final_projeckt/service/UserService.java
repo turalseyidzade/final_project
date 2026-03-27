@@ -7,4 +7,5 @@ import azcompany.final_projeckt.exceptions.RegistrationException;
 public interface UserService {
     UserResponseDto register(UserRegistrationRequestDto requestDto) throws RegistrationException;
     void verifyAccount(String email, String otp);
+
 }

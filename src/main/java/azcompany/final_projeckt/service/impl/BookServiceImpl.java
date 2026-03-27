@@ -1,6 +1,8 @@
 package azcompany.final_projeckt.service.impl;
 
+import azcompany.final_projeckt.dao.entities.Category;
 import azcompany.final_projeckt.dao.repositories.BookRepository;
+import azcompany.final_projeckt.dao.repositories.CategoryRepository;
 import azcompany.final_projeckt.dao.repositories.specification.BookSpecificationBuilder;
 import azcompany.final_projeckt.dto.book.BookDto;
 import azcompany.final_projeckt.dto.book.BookDtoWithoutCategoryIds;
@@ -16,7 +18,10 @@ import org.springframework.stereotype.Service;
 import azcompany.final_projeckt.dao.entities.Book;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +32,21 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
     public BookDto save(CreateBookRequestDto requestDto) {
+        Set<Category> categories = new HashSet<>();
+        if (requestDto.getCategoryIds() != null) {
+            categories = categoryRepository.findAllById(requestDto.getCategoryIds())
+                    .stream()
+                    .collect(Collectors.toSet());
+        }
         Book book = bookMapper.toBook(requestDto);
-        return bookMapper.toDto(bookRepository.save(book));
+        book.setCategories(categories);
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDto(savedBook);
     }
 
     @Override
@@ -62,11 +76,19 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto updateBookById(Long id, CreateBookRequestDto bookDto) {
-        Book existingBook = bookRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find book by id: " + id)
-        );
 
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: " + id));
         bookMapper.updateBookFromDto(bookDto, existingBook);
+        Set<Category> categories = new HashSet<>();
+
+        if (bookDto.getCategoryIds() != null && !bookDto.getCategoryIds().isEmpty()) {
+            categories = new HashSet<>(
+                    categoryRepository.findAllById(bookDto.getCategoryIds())
+            );
+        }
+        existingBook.setCategories(categories);
+
         return bookMapper.toDto(bookRepository.save(existingBook));
     }
 

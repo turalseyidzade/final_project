@@ -6,6 +6,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SoftDelete;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,27 +17,30 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
-@SoftDelete(columnName = "is_deleted")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
+    @Column(nullable = false)
     private String title;
 
-    @NonNull
+    @Column(nullable = false)
     private String author;
 
-    @NonNull
     @Column(unique = true)
     private String isbn;
 
-    @NonNull
-    private BigDecimal price;
+    @Builder.Default
+    @Column(name = "release_date", nullable = false)
+    private LocalDateTime releaseDate = LocalDateTime.now();
 
-    @Column(unique = false)
+    @Builder.Default
+    @Column(nullable = false)
+    private BigDecimal price = BigDecimal.ZERO;
+
+    @Builder.Default
+    @Column(nullable = false)
     private Integer stockQuantity = 0;
 
     private String description;
@@ -50,7 +54,8 @@ public class Book {
     @ToString.Exclude
     private Set<Category> categories = new HashSet<>();
 
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
 

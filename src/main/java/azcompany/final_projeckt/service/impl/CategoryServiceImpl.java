@@ -9,7 +9,9 @@ import azcompany.final_projeckt.dao.entities.Category;
 import azcompany.final_projeckt.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -23,6 +25,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryResponseDto> findAll(Pageable pageable) {
+        // Əgər pageable null və ya sortsuzdursa default sort əlavə edirik
+        if (pageable == null || !pageable.getSort().isSorted()) {
+            pageable = PageRequest.of(
+                    pageable != null ? pageable.getPageNumber() : 0,
+                    pageable != null ? pageable.getPageSize() : 20,
+                    Sort.by("name") // default sort by name
+            );
+        }
+
         return categoryRepository.findAll(pageable).stream()
                 .map(categoryMapper::toDto)
                 .toList();

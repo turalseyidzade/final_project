@@ -37,16 +37,33 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto save(CreateBookRequestDto requestDto) {
+        // 1. Mövcud ISBN yoxlanılır
+        Book existingBook = bookRepository.findByIsbn(requestDto.getIsbn());
+        if (existingBook != null) {
+            // 2. Mövcud kitab varsa, məlumatları update et
+            bookMapper.updateBookFromDto(requestDto, existingBook);
+
+            Set<Category> categories = new HashSet<>();
+            if (requestDto.getCategoryIds() != null) {
+                categories = categoryRepository.findAllById(requestDto.getCategoryIds())
+                        .stream().collect(Collectors.toSet());
+            }
+            existingBook.setCategories(categories);
+
+            return bookMapper.toDto(bookRepository.save(existingBook));
+        }
+
+        // 3. Əks halda yeni kitab yarat
+        Book book = bookMapper.toBook(requestDto);
+
         Set<Category> categories = new HashSet<>();
         if (requestDto.getCategoryIds() != null) {
             categories = categoryRepository.findAllById(requestDto.getCategoryIds())
-                    .stream()
-                    .collect(Collectors.toSet());
+                    .stream().collect(Collectors.toSet());
         }
-        Book book = bookMapper.toBook(requestDto);
         book.setCategories(categories);
-        Book savedBook = bookRepository.save(book);
-        return bookMapper.toDto(savedBook);
+
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override

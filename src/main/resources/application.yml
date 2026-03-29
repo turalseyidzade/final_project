@@ -7,7 +7,7 @@ spring:
     # import: "vault://"
     name: final_projeckt
   datasource:
-    url: jdbc:postgresql://localhost:5432/final_projeckt
+    url: jdbc:postgresql://localhost:5432/final_project
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver

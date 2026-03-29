@@ -38,9 +38,7 @@ public class CategoryController {
         return categoryService.save(requestDto);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @GetMapping
-    @Operation(summary = "Get categories", description = "Get all available categories")
     public List<CategoryResponseDto> getAll(Pageable pageable) {
         return categoryService.findAll(pageable);
     }

@@ -3,8 +3,11 @@ package azcompany.final_projeckt.dao.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
-@Table(name = "cartegories")
+@Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +25,7 @@ public class Category {
     @Column(nullable = false)
 
     private boolean isDeleted = false;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<Book> books = new HashSet<>();
 }

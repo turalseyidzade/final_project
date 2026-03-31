@@ -9,6 +9,7 @@ import azcompany.final_projeckt.dao.entities.Category;
 import azcompany.final_projeckt.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,19 +25,17 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryResponseDto> findAll(Pageable pageable) {
-        // Əgər pageable null və ya sortsuzdursa default sort əlavə edirik
+    public Page<CategoryResponseDto> findAllPaged(Pageable pageable) {
         if (pageable == null || !pageable.getSort().isSorted()) {
             pageable = PageRequest.of(
                     pageable != null ? pageable.getPageNumber() : 0,
                     pageable != null ? pageable.getPageSize() : 20,
-                    Sort.by("name") // default sort by name
+                    Sort.by("name")
             );
         }
 
-        return categoryRepository.findAll(pageable).stream()
-                .map(categoryMapper::toDto)
-                .toList();
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toDto);
     }
 
     @Override
@@ -55,16 +54,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDto update(Long id, CreateCategoryRequestDto requestDto) {
-        if (!categoryRepository.existsById(id)) {
-            throw new EntityNotFoundException("Can't find category by id: " + id);
-        }
-        Category category = categoryMapper.toCategory(requestDto);
-        category.setId(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find category by id: " + id));
+        category.setName(requestDto.getName());
+        category.setDescription(requestDto.getDescription());
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
     @Override
     public void deleteById(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Can't find category by id: " + id);
+        }
         categoryRepository.deleteById(id);
     }
 }

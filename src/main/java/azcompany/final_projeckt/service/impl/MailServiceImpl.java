@@ -1,5 +1,6 @@
-package azcompany.final_projeckt.service;
+package azcompany.final_projeckt.service.impl;
 
+import azcompany.final_projeckt.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

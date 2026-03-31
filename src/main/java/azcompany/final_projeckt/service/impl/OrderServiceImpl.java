@@ -42,35 +42,36 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("ShoppingCart not found"));
 
         BigDecimal totalAmount = shoppingCart.getCartItems().stream()
-                .map(item-> item.getBook().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> item.getBook().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (user.getBalance().compareTo(totalAmount)< 0){
+        if (user.getBalance().compareTo(totalAmount) < 0) {
             throw new InsufficientBalanceException("Not enough money! Required: " + totalAmount + ", Available: " + user.getBalance());
         }
+
         for (CartItem item : shoppingCart.getCartItems()) {
             Book book = item.getBook();
-            if (book.getStockQuantity()< item.getQuantity()){
+            if (book.getStockQuantity() < item.getQuantity()) {
                 throw new OutOfStockException("Insufficient stock for: " + book.getTitle());
             }
-            book.setStockQuantity(book.getStockQuantity()- item.getQuantity());
+            book.setStockQuantity(book.getStockQuantity() - item.getQuantity());
         }
         user.setBalance(user.getBalance().subtract(totalAmount));
         userRepository.save(user);
 
         Order order = createOrder(id, shoppingCart, requestDto);
         order.setTotal(totalAmount);
+
         Order savedOrder = orderRepository.save(order);
 
         processorOrderItems(shoppingCart, savedOrder);
 
-        cartItemRepository.deleteAll(shoppingCart.getCartItems());
+        Order updatedOrder = orderRepository.save(savedOrder);
 
-        return orderMapper.toDto(savedOrder);
-
+        return orderMapper.toDto(updatedOrder);
     }
 
-    private void processorOrderItems(ShoppingCart shoppingCart, Order order) {
+    private Set<OrderItem> processorOrderItems(ShoppingCart shoppingCart, Order order) {
         Set<OrderItem> orderItems = shoppingCart.getCartItems().stream()
                 .map(cartItem -> {
                     OrderItem orderItem = new OrderItem();
@@ -83,7 +84,11 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toSet());
 
         orderItemRepository.saveAll(orderItems);
+
+        order.setOrderItems(orderItems);
+        return orderItems;
     }
+
     @Override
     public List<OrderResponseDto> getAll(Long id) {
         List<Order> orderList = orderRepository.findAllByUserId(id);
